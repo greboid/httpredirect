@@ -6,9 +6,9 @@ import (
 	"os"
 )
 
-var targetHost = os.Getenv("HOST")
+var targetHost = os.Getenv("TARGETHOST")
 var excludeQuery = os.Getenv("EXCLUDEQUERY")
-var targetPath = os.Getenv("PATH")
+var targetPath = os.Getenv("TARGETPATH")
 var httpRedirect = os.Getenv("HTTPREDIRECT")
 var tempRedirect = os.Getenv("TEMPREDIRECT")
 
