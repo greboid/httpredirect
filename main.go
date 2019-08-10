@@ -10,6 +10,7 @@ var targetHost = os.Getenv("HOST")
 var excludeQuery = os.Getenv("EXCLUDEQUERY")
 var targetPath = os.Getenv("PATH")
 var httpRedirect = os.Getenv("HTTPREDIRECT")
+var tempRedirect = os.Getenv("TEMPREDIRECT")
 
 func redirect(w http.ResponseWriter, req *http.Request) {
 	var target string
@@ -38,7 +39,11 @@ func redirect(w http.ResponseWriter, req *http.Request) {
 		}
 	}
 	log.Printf("redirect to: %s", target)
-	http.Redirect(w, req, target, http.StatusPermanentRedirect)
+	if len(tempRedirect) == 0 {
+		http.Redirect(w, req, target, http.StatusTemporaryRedirect)
+	} else {
+		http.Redirect(w, req, target, http.StatusPermanentRedirect)
+	}
 }
 
 func main() {
