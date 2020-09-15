@@ -47,7 +47,7 @@ func redirect(w http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
-	if err := http.ListenAndServe(":80", http.HandlerFunc(redirect)); err != http.ErrServerClosed {
+	if err := http.ListenAndServe(":8080", http.HandlerFunc(redirect)); err != http.ErrServerClosed {
 		log.Fatalf("ListenAndServe(): %s", err)
 	}
 }

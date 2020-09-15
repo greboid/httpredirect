@@ -25,5 +25,5 @@ COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
 
 COPY --from=builder /app/main /httpredirect
 USER appuser:appuser
-EXPOSE 80
+EXPOSE 8080
 CMD ["/httpredirect"]
