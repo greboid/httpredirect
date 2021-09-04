@@ -1,4 +1,4 @@
-FROM golang:latest as builder
+FROM registry.greboid.com/mirror/golang:latest as builder
 
 ENV USER=appuser
 ENV UID=10001
@@ -14,7 +14,7 @@ RUN adduser \
 
 WORKDIR /app
 COPY . /app
-RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main github.com/greboid/httpredirect
+RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main .
 
 FROM scratch
 
