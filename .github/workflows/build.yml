@@ -22,7 +22,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build image
         id: build-image-auth
-        uses: redhat-actions/buildah-build@v2.10
+        uses: redhat-actions/buildah-build@v2.11
         with:
           dockerfiles: Dockerfile
           image: ${{ github.repository }}
