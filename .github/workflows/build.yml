@@ -31,7 +31,7 @@ jobs:
             --timestamp
             0
       - name: Push to GHCR
-        uses: redhat-actions/push-to-registry@v2.6
+        uses: redhat-actions/push-to-registry@v2.7
         with:
           image: ${{ steps.build-image-auth.outputs.image }}
           registry: ghcr.io
