@@ -7,9 +7,9 @@ on:
       - v*
 jobs:
   test:
-    uses: greboid/.github/.github/workflows/checkout-and-test-go.yml@master
+    uses: greboid/.github/.github/workflows/go-test.yml@master
     secrets: inherit
   container:
-    uses: greboid/.github/.github/workflows/checkout-build-and-push-docker.yml@master
+    uses: greboid/.github/.github/workflows/docker.yml@master
     secrets: inherit
     needs: [test]
