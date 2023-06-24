@@ -1,0 +1,21 @@
+name: build
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  test:
+    name: Test
+    uses: greboid/.github/.github/workflows/go-test.yml@master
+    secrets: inherit
+  container:
+    name: Container
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v2
+        with:
+          go-version: 'stable'
+      - uses: actions/checkout@v2
+      - uses: ko-build/setup-ko@v0.6
+      - run: KO_DATA_DATE_EPOCH=$(git log -1 --format='%ct') KO_DOCKER_REPO=ghcr.io/greboid ko build -B --platform=all

@@ -1,0 +1,5 @@
+builds:
+  - id: release
+    ldflags:
+    - -s -w
+    - -extldflags "-static"      
