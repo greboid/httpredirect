@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"log"
 	"net/http"
 	"os"
@@ -11,28 +12,29 @@ var excludeQuery = os.Getenv("EXCLUDEQUERY")
 var targetPath = os.Getenv("TARGETPATH")
 var httpRedirect = os.Getenv("HTTPREDIRECT")
 var tempRedirect = os.Getenv("TEMPREDIRECT")
+var port = os.Getenv("PORT")
 
 func redirect(w http.ResponseWriter, req *http.Request) {
 	var target string
-	//Check if http or https
+	// Check if http or https
 	if len(httpRedirect) == 0 {
 		target += "https://"
 	} else {
 		target += "http://"
 	}
-	//Check what host to point at, defaulting to the requested host
+	// Check what host to point at, defaulting to the requested host
 	if len(targetHost) == 0 {
 		target += req.Host
 	} else {
 		target += targetHost
 	}
-	//Check whether to redirect to a fixed path, or existing
+	// Check whether to redirect to a fixed path, or existing
 	if len(targetPath) == 0 {
 		target += req.URL.Path
 	} else {
 		target += targetPath
 	}
-	//Should we include the query parameters?
+	// Should we include the query parameters?
 	if len(excludeQuery) == 0 {
 		if len(req.URL.RawQuery) > 0 {
 			target += "?" + req.URL.RawQuery
@@ -47,7 +49,10 @@ func redirect(w http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
-	if err := http.ListenAndServe(":8080", http.HandlerFunc(redirect)); err != http.ErrServerClosed {
+	if len(port) == 0 {
+		port = "8080"
+	}
+	if err := http.ListenAndServe(":"+port, http.HandlerFunc(redirect)); !errors.Is(err, http.ErrServerClosed) {
 		log.Fatalf("ListenAndServe(): %s", err)
 	}
 }

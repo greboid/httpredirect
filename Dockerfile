@@ -1,11 +1,12 @@
-FROM ghcr.io/greboid/dockerfiles/golang:latest as builder
+FROM golang:1.25.5 AS builder
 
 WORKDIR /app
+COPY go.mod go.sum /app/
+RUN go mod download
 COPY . /app
-RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main .
+RUN CGO_ENABLED=0 GOOS=linux go build -tags netgo,opusergo -a -trimpath -ldflags='-w -extldflags "-static" -buildid=' -o main .
 
-FROM ghcr.io/greboid/dockerfiles/base:latest
+FROM ghcr.io/greboid/dockerbase/root:1.20251213.0
 
 COPY --from=builder /app/main /httpredirect
-EXPOSE 8080
 CMD ["/httpredirect"]

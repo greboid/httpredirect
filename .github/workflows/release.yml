@@ -1,20 +1,70 @@
-name: build
+name: Test and Build
+permissions:
+  contents: read
+  packages: write
 on:
+  workflow_call:
   push:
+    branches:
+      - master
     tags:
       - v*
+
 jobs:
   test:
-    name: Test
-    uses: greboid/.github/.github/workflows/go-test.yml@master
-    secrets: inherit
-  container:
-    name: Container
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-go@v4
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install Go
+        uses: actions/setup-go@v6
         with:
           go-version: 'stable'
-      - uses: actions/checkout@v3
-      - uses: ko-build/setup-ko@v0.6
-      - run: KO_DATA_DATE_EPOCH=$(git log -1 --format='%ct') KO_DOCKER_REPO=ghcr.io/greboid ko build -B --platform=all -t ${{github.ref_name}} -t latest
+
+      - name: Install dependencies
+        run: go get .
+
+      - name: Test with the Go CLI
+        run: go test
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Generate tags
+        id: tags
+        uses: greboid/docker-tags-action@v6.0.4
+        with:
+          separator: ' '
+          fullname: 'false'
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: 'ghcr.io'
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build image
+        id: build-image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          dockerfiles: Dockerfile
+          image: ${{ github.repository }}
+          platforms: linux/amd64, linux/aarch64
+          tags: ${{ steps.tags.outputs.tags }}
+          extra-args: >
+            --timestamp
+            0
+
+      - name: Push
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          registry: 'ghcr.io'
+          image: ${{ steps.build-image.outputs.image }}
+          tags: ${{ steps.build-image.outputs.tags }}
