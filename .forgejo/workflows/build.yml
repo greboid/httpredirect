@@ -1,0 +1,39 @@
+name: Test and Build
+
+enable-openid-connect: true
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+    tags:
+      - v*
+
+jobs:
+  test:
+    runs-on: alpine
+    steps:
+      - uses: actions/toolkit/git-checkout@master
+      - uses: actions/toolkit/go-setup@master
+      - uses: actions/toolkit/go-test@master
+  container:
+    runs-on: alpine
+    steps:
+      - uses: actions/toolkit/git-checkout@master
+      - uses: actions/toolkit/docker-login@master
+        with:
+          audience: u:1:304f137e-bd85-4cc7-bef2-f1cdf614dfc8
+      - uses: actions/toolkit/docker-build@master
+  release:
+    if: github.ref_type == 'tag'
+    runs-on: alpine
+    needs:
+      - test
+      - container
+    steps:
+      - uses: actions/toolkit/git-checkout@master
+      - uses: actions/toolkit/docker-login@master
+        with:
+          audience: u:1:304f137e-bd85-4cc7-bef2-f1cdf614dfc8
+      - uses: actions/toolkit/docker-build@master
