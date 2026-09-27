@@ -1,0 +1,6 @@
+# depbot: per-repo overrides.
+automerge:
+  - ecosystems: [docker]
+    deps: ["git.mouse-lake.ts.net/*"]
+  - ecosystems: [go]
+    deps: ["git.mouse-lake.ts.net/*", "github.com/greboid/*", "golang.org/x/*"]
