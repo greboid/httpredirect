@@ -1,0 +1,12 @@
+name: pr
+
+on:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: alpine
+    steps:
+      - uses: actions/toolkit/git-checkout@master
+      - uses: actions/toolkit/go-test@master
+      - uses: actions/toolkit/docker-build@master
